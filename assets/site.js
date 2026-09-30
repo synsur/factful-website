@@ -113,9 +113,14 @@
     const today = new Date();
     today.setHours(12, 0, 0, 0);
     const dayNumber = Math.floor(today.getTime() / 86400000);
-    // Today's page: one of the best facts, the same for everyone all day. The rest follow in a daily order.
-    const best = facts.slice(0, 38);
-    const first = best[dayNumber % best.length];
+    // Today's page is a headliner: short, needs no context, lands in three seconds, and isn't used elsewhere on
+    // the page. Same for everyone all day, rotating daily from the first on launch day (2026-09-30 is day 20726).
+    // The rest of the deck follows in a daily order.
+    const headliners = ['history-0013', 'history-0026', 'nature-0024', 'psychology-0001', 'science-0072',
+                        'nature-0032', 'technology-0062']
+      .map((id) => facts.find((f) => f.id === id)).filter(Boolean);
+    const best = headliners.length ? headliners : facts.slice(0, 38);
+    const first = best[(((dayNumber - 20726) % best.length) + best.length) % best.length];
     const deck = [first, ...seededShuffle(facts.filter((f) => f !== first), dayNumber)];
 
     const weekday = new Intl.DateTimeFormat(undefined, { weekday: 'long' });

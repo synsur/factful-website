@@ -1,399 +1,283 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Factful - Heal your brain. One fact at a time.</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            overflow-x: hidden;
-        }
-
-        .hero {
-            min-height: 100vh;
-            background: linear-gradient(135deg, #1841c0 0%, #2563eb 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="30" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="70" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="80" r="2.5" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="90" r="1.5" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
-            animation: float 20s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(180deg); }
-        }
-
-        .hero-content {
-            text-align: center;
-            color: white;
-            z-index: 2;
-            max-width: 800px;
-            padding: 2rem;
-            position: relative;
-        }
-
-        .hero h1 {
-            font-size: clamp(2.5rem, 8vw, 5rem);
-            font-weight: 800;
-            margin-bottom: 1rem;
-            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            animation: fadeInUp 1s ease-out;
-        }
-
-        .hero .tagline {
-            font-size: clamp(1.2rem, 4vw, 2rem);
-            margin-bottom: 2rem;
-            opacity: 0.95;
-            font-weight: 300;
-            animation: fadeInUp 1s ease-out 0.2s both;
-        }
-
-        .hero .description {
-            font-size: clamp(1rem, 2.5vw, 1.3rem);
-            margin-bottom: 3rem;
-            opacity: 0.9;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            animation: fadeInUp 1s ease-out 0.4s both;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .download-btn {
-            display: inline-block;
-            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
-            color: white;
-            padding: 1rem 2.5rem;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            transition: all 0.3s ease;
-            animation: fadeInUp 1s ease-out 0.6s both;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .download-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .download-btn:hover::before {
-            left: 100%;
-        }
-
-        .download-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-        }
-
-        .features {
-            padding: 5rem 2rem;
-            background: linear-gradient(135deg, #e8f0fe 0%, #f8faff 100%);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .feature-card {
-            background: rgba(255,255,255,0.9);
-            padding: 2rem;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: 1px solid rgba(255,255,255,0.5);
-            backdrop-filter: blur(10px);
-        }
-
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
-        }
-
-        .feature-icon {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(45deg, #1841c0, #2563eb);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
-        }
-
-        .section-title {
-            text-align: center;
-            font-size: clamp(2rem, 5vw, 3rem);
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 1rem;
-        }
-
-        .section-subtitle {
-            text-align: center;
-            font-size: 1.2rem;
-            color: #666;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .footer {
-            background: #1841c0;
-            color: white;
-            padding: 3rem 2rem 2rem;
-            text-align: center;
-        }
-
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .footer-links a {
-            color: white;
-            text-decoration: none;
-            padding: 0.5rem 1rem;
-            border-radius: 25px;
-            border: 1px solid rgba(255,255,255,0.3);
-            transition: all 0.3s ease;
-        }
-
-        .footer-links a:hover {
-            background: rgba(255,255,255,0.1);
-            transform: translateY(-2px);
-        }
-
-        .brain-icon {
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        .fact-bubble {
-            position: absolute;
-            background: rgba(255,255,255,0.1);
-            border-radius: 50%;
-            pointer-events: none;
-        }
-
-        .fact-bubble:nth-child(1) {
-            width: 80px;
-            height: 80px;
-            top: 20%;
-            left: 10%;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        .fact-bubble:nth-child(2) {
-            width: 60px;
-            height: 60px;
-            top: 60%;
-            right: 15%;
-            animation: float 8s ease-in-out infinite reverse;
-        }
-
-        .fact-bubble:nth-child(3) {
-            width: 40px;
-            height: 40px;
-            bottom: 30%;
-            left: 20%;
-            animation: float 7s ease-in-out infinite;
-        }
-
-        @media (max-width: 768px) {
-            .features-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .footer-links {
-                flex-direction: column;
-                align-items: center;
-            }
-        }
-
-        .scroll-indicator {
-            position: absolute;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            color: white;
-            opacity: 0.7;
-            animation: bounce 2s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
-            40% { transform: translateX(-50%) translateY(-10px); }
-            60% { transform: translateX(-50%) translateY(-5px); }
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Factful — One true fact a day</title>
+<meta name="description" content="A page-a-day calendar for your brain. Every morning one short, surprising fact lands on your lock screen, checked against the source it cites. Free on iPhone.">
+<link rel="canonical" href="https://factful.app/">
+<meta name="theme-color" content="#eee7da" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#12100e" media="(prefers-color-scheme: dark)">
+<meta name="apple-itunes-app" content="app-id=6746733914">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://factful.app/">
+<meta property="og:title" content="Factful — One true fact a day">
+<meta property="og:description" content="Every morning, one short, surprising, source-checked fact on your lock screen. Tear it off. Know one more true thing.">
+<meta property="og:image" content="https://factful.app/assets/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/img/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/newsreader-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"MobileApplication","name":"Factful","operatingSystem":"iOS","applicationCategory":"EducationApplication","description":"One true, surprising, source-checked fact a day on your lock screen.","url":"https://factful.app/","installUrl":"https://apps.apple.com/us/app/factful-daily-facts/id6746733914","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"publisher":{"@type":"Organization","name":"Vickio Labs Inc."}}
+</script>
 </head>
 <body>
-    <section class="hero">
-        <div class="fact-bubble"></div>
-        <div class="fact-bubble"></div>
-        <div class="fact-bubble"></div>
-        
-        <div class="hero-content">
-            <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
-                <div style="width: 80px; height: 80px; background: white; border-radius: 20px; display: flex; align-items: center; justify-content: center; margin-right: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
-                    <div style="width: 60px; height: 60px; background: #1841c0; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem; font-weight: 800;">F?</div>
-                </div>
-                <h1 style="margin: 0;">Factful</h1>
-            </div>
-            <div class="tagline">Heal your brain. One fact at a time.</div>
-            <div class="description">
-                Factful sends you <strong>one fascinating fact every day</strong>—straight to your phone. Designed to fight the brain rot caused by endless scrolling, Factful helps you feel smarter, guilt-free, and just a little more curious.
-            </div>
-            <a href="#" class="download-btn">📱 Download on App Store</a>
+
+<header class="bar" id="top">
+  <div class="wrap">
+    <a class="wordmark" href="/" aria-label="Factful home"><img src="assets/img/apple-touch-icon.png" alt="" width="30" height="30">Factful</a>
+    <nav aria-label="Main">
+      <a href="#ritual" class="hide-sm">How it works</a>
+      <a href="#checked" class="hide-sm">Checked</a>
+      <a href="#plus" class="hide-sm">Factful+</a>
+      <a class="pill" href="https://apps.apple.com/us/app/factful-daily-facts/id6746733914">Get the app</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <span class="caps kicker">A daily fact app for iPhone</span>
+        <h1>One true fact <em>a&nbsp;day.</em></h1>
+        <p class="lede">Every morning a page lands on your lock screen: short, surprising, and checked against the source it cites. Tear it off, and you know one more true thing than you did yesterday.</p>
+        <div class="cta">
+          <a class="badge" href="https://apps.apple.com/us/app/factful-daily-facts/id6746733914"><img src="assets/img/app-store-badge-black.svg" alt="Download on the App Store" width="162" height="54"></a>
+          <small>Free on iPhone and iPad.<br>Factful+ from $2.50 a month, billed yearly.</small>
         </div>
-        
-        <div class="scroll-indicator">
-            <div style="font-size: 1.5rem;">↓</div>
-            <div style="font-size: 0.9rem; margin-top: 0.5rem;">Discover More</div>
-        </div>
-    </section>
+      </div>
 
-    <section class="features">
-        <div class="container">
-            <h2 class="section-title">Why Factful?</h2>
-            <p class="section-subtitle">Whether you're bored, burned out, or just love learning, Factful gives your brain a daily hit of "wait, that's actually interesting."</p>
-            
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon brain-icon">🧠</div>
-                    <h3>Daily Brain Fuel</h3>
-                    <p>Get 1 fascinating fact every day (Free) or upgrade to 5 daily facts + categories (Premium). Zero spam, just pure knowledge.</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">✨</div>
-                    <h3>Sleek & Minimal</h3>
-                    <p>Beautiful, distraction-free design that respects your time and attention. No endless feeds, just meaningful content.</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">🎯</div>
-                    <h3>Fight Brain Rot</h3>
-                    <p>Break the cycle of mindless scrolling. Replace empty content with fascinating facts that actually make you smarter.</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">🚀</div>
-                    <h3>Feel Smarter</h3>
-                    <p>Experience the guilt-free satisfaction of learning something new every day. Knowledge that sticks, not just scroll.</p>
-                </div>
+      <div class="stage">
+        <div class="pad" id="pad" tabindex="0" role="group" aria-roledescription="tear-off calendar"
+             aria-label="Factful's tear-off pad. Press Enter or pull a page down to tear it off.">
+          <div class="binding" aria-hidden="true">FACTFUL ·<span id="year-roman">MMXXVI</span></div>
+          <div class="leaves" id="leaves">
+            <div class="edge" aria-hidden="true"></div>
+            <div class="edge e2" aria-hidden="true"></div>
+            <noscript>
+              <article class="leaf">
+                <div class="head"><span class="caps">Today</span></div>
+                <hr>
+                <span class="cat" style="color: var(--history)">History</span>
+                <p class="hook">Oxford University is older than the Aztec Empire.</p>
+              </article>
+            </noscript>
+          </div>
+        </div>
+        <div class="pad-hint">
+          <button type="button" id="tear-button"><span class="bob" aria-hidden="true">↓</span> Pull a page down to tear it off</button>
+          <button type="button" class="sound" id="sound" aria-pressed="true" aria-label="Sound">
+            <svg class="on" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5zM15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+            <svg class="off" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5zM16 9l6 6M22 9l-6 6"/></svg>
+          </button>
+        </div>
+        <p class="visually-hidden" id="pad-status" aria-live="polite"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="chapter" id="delivery">
+    <div class="wrap split">
+      <div class="copy rise">
+        <span class="caps kicker">Delivery</span>
+        <h2>It arrives at the moment <em>you choose.</em></h2>
+        <p>Pick a time: with coffee, on the commute, at lunch. Factful sends one notification a day, and the whole fact is right there on your lock screen, no tapping required.</p>
+        <p><strong>No streaks. No come-back reminders. No promotions.</strong> Just the page, and nothing else, ever.</p>
+        <p>Your pages are scheduled weeks ahead, right on your phone, so they keep arriving even on the days you never open the app.</p>
+      </div>
+      <div class="rise" id="lock-phone">
+        <div class="phone">
+          <div class="lock" role="img" aria-label="An iPhone lock screen at 9:00 with a Factful notification: Oxford University is older than the Aztec Empire.">
+            <div class="ldate" id="lock-date">Tuesday 29 September</div>
+            <div class="ltime">9:00</div>
+            <div class="notif">
+              <img src="assets/img/apple-touch-icon.png" alt="">
+              <div><time>now</time><b>History</b><span>Oxford University is older than the Aztec Empire.</span></div>
             </div>
+          </div>
         </div>
-    </section>
+      </div>
+    </div>
+  </section>
 
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-links">
-                <a href="privacy.html">Privacy Policy</a>
-                <a href="terms.html">Terms of Service</a>
-                <a href="mailto:support@factful.app">Contact Support</a>
+  <section class="chapter" id="ritual">
+    <div class="wrap split flip">
+      <div class="copy rise">
+        <span class="caps kicker">The ritual</span>
+        <h2>Tear it off. It's <em>oddly satisfying.</em></h2>
+        <p>Factful is a page-a-day calendar. Yesterday's page stays on top until you pull it away, with the sound of paper and a little tap you feel in your hand, and today's fact is waiting underneath.</p>
+        <p>Every page has a <strong>Why it's true</strong>: the story behind the fact and the source it came from, one tap away.</p>
+      </div>
+      <div class="rise">
+        <div class="phone">
+          <video src="assets/media/app-tear.mp4" poster="assets/media/app-tear-poster.jpg" autoplay muted loop playsinline preload="metadata"
+                 aria-label="Screen recording of the Factful app: yesterday's page is pulled down and torn away, revealing today's fact."></video>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="chapter" id="checked">
+    <div class="wrap split">
+      <div class="copy rise">
+        <span class="caps kicker">Every fact, checked</span>
+        <h2>True is the minimum. <em>Surprising</em> is the bar.</h2>
+        <p>Every page cites its source, and every number on it is matched against that source before it ships. Then comes the harder test: would a stranger stop scrolling for it? Most facts don't make it. We even retired 73 facts for being merely true.</p>
+        <div class="funnel" aria-label="Our last batch of facts">
+          <div><b>2,800</b><span>candidates in our last batch</span></div>
+          <div><b>917</b><span>confirmed by the source they cite</span></div>
+          <div><b>290</b><span>surprising enough to ship</span></div>
+        </div>
+      </div>
+      <div class="rise">
+        <article class="sheet" aria-label="An example of Why it's true">
+          <span class="cat" style="color: var(--history)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18M5 18h14M6.5 18v-7.5M10 18v-7.5M14 18v-7.5M17.5 18v-7.5M4 10.5h16L12 4z"/></svg>
+            History
+          </span>
+          <h3>Vikings were cutting trees in Canada in 1021, and a solar storm is how we know the exact year.</h3>
+          <p>A burst of cosmic radiation in 993 left a radiocarbon spike in tree rings worldwide. Counting rings out from that spike in wood cut with metal tools at L'Anse aux Meadows, Newfoundland, showed all three trees were felled in 1021. It is the only secure date for Europeans in the Americas before Columbus.</p>
+          <div class="src">
+            <span class="caps" style="font-size: .68rem">Source</span>
+            <b>Nature</b>
+            <span>Evidence for European presence in the Americas in AD 1021</span>
+            <a href="https://www.nature.com/articles/s41586-021-03972-8" rel="noopener">Read the source ↗</a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="ribbon" aria-label="A few pages from the library">
+    <div class="row" id="row-a"></div>
+    <div class="row" id="row-b"></div>
+  </section>
+
+  <section class="chapter" id="widgets">
+    <div class="wrap split flip">
+      <div class="copy rise">
+        <span class="caps kicker">Widgets</span>
+        <h2>On your Home Screen, <em>all&nbsp;day.</em></h2>
+        <p>Today's fact sits on your Home Screen and Lock Screen. Before your delivery time, the widget simply says when the page arrives, so it never spoils the notification.</p>
+        <p>Light and dark, iPhone and iPad.</p>
+      </div>
+      <div class="rise">
+        <div class="phone">
+          <div class="home" role="img" aria-label="An iPhone home screen with Factful widgets">
+            <div class="w medium">
+              <div class="top"><span class="cat" style="color: #1d6391; font-size: .62rem">Geography</span><span class="when" id="widget-date">WED 30</span></div>
+              <p>Every continent on Earth could fit inside the Pacific Ocean at once.</p>
             </div>
-            <p>&copy; 2025 Factful. All rights reserved.</p>
-            <p style="margin-top: 1rem; opacity: 0.7; font-size: 0.9rem;">Heal your brain. One fact at a time.</p>
+            <div class="smalls">
+              <div class="w small"><span class="cat" style="color: #34408f; font-size: .56rem">Space</span><p>A day on Venus is longer than its year.</p></div>
+              <div class="w small"><span class="cat" style="color: #9c3b22; font-size: .56rem">History</span><p>Oxford University is older than the Aztec Empire.</p></div>
+            </div>
+            <div class="apps" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="dock" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+          </div>
         </div>
-    </footer>
+      </div>
+    </div>
+  </section>
 
-    <script>
-        // Smooth scrolling for scroll indicator
-        document.querySelector('.scroll-indicator').addEventListener('click', () => {
-            document.querySelector('.features').scrollIntoView({ behavior: 'smooth' });
-        });
+  <section class="chapter" id="plus">
+    <div class="wrap">
+      <div class="copy rise" style="text-align: center">
+        <span class="caps kicker">Factful and Factful+</span>
+        <h2 style="max-width: 18ch; margin-inline: auto">Free to start. <em>More</em> if you want it.</h2>
+      </div>
+      <div class="plans">
+        <div class="plan rise">
+          <span class="caps">Factful</span>
+          <h3>Free</h3>
+          <ul>
+            <li>One page a day, at the time you choose</li>
+            <li>Why it's true, with its source</li>
+            <li>Your library of every page</li>
+            <li>Save and share any page</li>
+            <li>Home Screen and Lock Screen widgets</li>
+          </ul>
+          <div class="prices"><div><span>Forever</span><b>$0</b></div></div>
+        </div>
+        <div class="plan plus rise">
+          <span class="caps">Factful+</span>
+          <h3>Up to five a day</h3>
+          <ul>
+            <li>Up to five pages a day, all at once or spread through the day</li>
+            <li>Choose the subjects you get</li>
+            <li>Search everything you've learned</li>
+            <li>Everything in Factful</li>
+          </ul>
+          <div class="prices">
+            <div><span>Annual</span><b>$29.99 a year</b></div>
+            <div><span>Monthly</span><b>$4.99 a month</b></div>
+            <div><span>Lifetime</span><b>$79.99 once</b></div>
+          </div>
+          <p class="fine">US prices; the App Store shows yours. Subscriptions renew until you cancel in Settings.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-        // Add some interactive animations
-        document.addEventListener('mousemove', (e) => {
-            const bubbles = document.querySelectorAll('.fact-bubble');
-            bubbles.forEach((bubble, index) => {
-                const speed = (index + 1) * 0.002;
-                const x = e.clientX * speed;
-                const y = e.clientY * speed;
-                bubble.style.transform = `translate(${x}px, ${y}px)`;
-            });
-        });
+  <section class="chapter" id="faq">
+    <div class="wrap">
+      <div class="copy rise" style="text-align: center">
+        <span class="caps kicker">Questions</span>
+        <h2>Good questions.</h2>
+      </div>
+      <div class="faq">
+        <details><summary>Is Factful free?</summary><p>Yes. One page a day, every day, with its source, your library and the widgets, free for good. Factful+ adds up to five pages a day, your choice of subjects and search.</p></details>
+        <details><summary>Where do the facts come from?</summary><p>From sources you can read yourself: encyclopedias, science agencies, museums, journals and major publications. Every page shows its source, with a link, under Why it's true.</p></details>
+        <details><summary>How do you check them?</summary><p>Every number in a fact is matched against the page it cites before it ships, and anything the source doesn't support is cut. If you ever spot a mistake, every page has a "Spot an error?" link that goes straight to us.</p></details>
+        <details><summary>What data do you collect?</summary><p>None. There's no account, no tracking and no analytics in the app. Your settings, history and saved pages stay on your device. Purchases are handled entirely by Apple. <a href="privacy.html">Read the privacy policy</a>.</p></details>
+        <details><summary>Will it nag me?</summary><p>Never. One notification a day at the time you pick. No streaks, no guilt, no "we miss you", no promotions.</p></details>
+        <details><summary>What if I don't open the app for a while?</summary><p>Your pages keep coming. They're scheduled weeks ahead on your phone, so the notification arrives whether or not you open Factful.</p></details>
+        <details><summary>How do I cancel Factful+?</summary><p>In iPhone Settings, tap your name, then Subscriptions, then Factful. Cancelling keeps Factful+ until the end of the period you paid for. Restoring purchases on a new phone is one tap in Factful's Settings.</p></details>
+      </div>
+    </div>
+  </section>
 
-        // Intersection Observer for animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
+  <section class="closing">
+    <div class="wrap">
+      <h2 class="rise">Your first page is <em>waiting.</em></h2>
+      <div class="cta rise">
+        <a class="badge" href="https://apps.apple.com/us/app/factful-daily-facts/id6746733914"><img src="assets/img/app-store-badge-black.svg" alt="Download on the App Store" width="162" height="54"></a>
+      </div>
+    </div>
+  </section>
+</main>
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, observerOptions);
+<footer>
+  <div class="wrap">
+    <span>Factful, by Vickio Labs Inc. · <span id="copyright-year">2026</span></span>
+    <nav aria-label="Footer">
+      <a href="support.html">Support</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Terms</a>
+    </nav>
+  </div>
+</footer>
 
-        // Observe feature cards
-        document.querySelectorAll('.feature-card').forEach(card => {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(50px)';
-            card.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
-            observer.observe(card);
-        });
-    </script>
+<dialog class="why-sheet" id="why">
+  <article class="sheet">
+    <button class="close" type="button" aria-label="Close" data-close>×</button>
+    <span class="cat" id="why-cat"></span>
+    <h3 id="why-hook"></h3>
+    <p id="why-detail"></p>
+    <div class="src">
+      <span class="caps" style="font-size: .68rem">Source</span>
+      <b id="why-pub"></b>
+      <span id="why-title"></span>
+      <a id="why-link" rel="noopener" href="#">Read the source ↗</a>
+    </div>
+  </article>
+</dialog>
+
+<script src="assets/site.js" defer></script>
 </body>
 </html>

@@ -134,6 +134,9 @@ h1 {
   text-wrap: balance;
 }
 h1 em { font-style: italic; font-weight: 400; color: var(--accent); }
+.see-all { margin: 1.75rem 0 0; }
+.see-all a { padding: .7rem 0; font-weight: 600; color: var(--accent); text-decoration: none; }
+.see-all a:hover { text-decoration: underline; }
 .lede { font-size: clamp(1.1rem, 1.6vw, 1.3rem); color: var(--ink-2); max-width: 30rem; margin: 0 0 2rem; text-wrap: pretty; }
 .cta { display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem; }
 .badge img { height: 3.25rem; width: auto; transition: transform .2s var(--ease); }

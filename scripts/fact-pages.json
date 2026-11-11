@@ -1,0 +1,46 @@
+{
+  "about": "The fact pages, one per posted run: its URL slug, never changed once live; its subject; optionally a <title> in place of the posted claim; and \"skip\" with \"why\" to leave a run off the site. scripts/build-facts.mjs adds an entry for each new post and never rewrites one.",
+  "pages": {
+    "2026-10-03-v1-ganymede": {
+      "slug": "ganymede-is-larger-than-mercury",
+      "subject": "space",
+      "title": "Jupiter's moon Ganymede is larger than the planet Mercury"
+    },
+    "2026-10-03-v1-venus": {
+      "slug": "a-day-on-venus-is-longer-than-its-year",
+      "subject": "space"
+    },
+    "2026-10-08-v1-vulovic": {
+      "slug": "vesna-vulovic-fell-six-miles-without-a-parachute",
+      "subject": "history",
+      "title": "Vesna Vulović fell six miles. No parachute. She lived."
+    },
+    "2026-10-12-v5-blindspot": {
+      "slug": "blind-spot-make-this-dot-disappear",
+      "subject": "science",
+      "title": "Make this dot disappear: your blind spot"
+    },
+    "2026-10-12-v8-tolstoy": {
+      "slug": "tolstoy-colour-photo-from-1908",
+      "subject": "history"
+    },
+    "2026-10-26-v10-holbein": {
+      "slug": "two-skulls-in-holbeins-the-ambassadors",
+      "subject": "history",
+      "title": "There are two skulls in Holbein's The Ambassadors"
+    },
+    "2026-10-26-v12-universe": {
+      "slug": "squeeze-the-universe-into-one-year",
+      "subject": "space"
+    },
+    "2026-10-26-v13-moon": {
+      "slug": "moon-landing-plan-b-in-event-of-moon-disaster",
+      "subject": "history"
+    },
+    "2026-10-26-v14-godwit": {
+      "slug": "godwit-flew-alaska-to-tasmania-without-landing",
+      "subject": "nature",
+      "title": "A godwit flew from Alaska to Tasmania without landing once"
+    }
+  }
+}

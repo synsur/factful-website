@@ -13,18 +13,19 @@
 // after each post. It is idempotent, and a page's URL never changes once scripts/fact-pages.json records its slug.
 //
 // --ref reads the studio's files from a git ref instead of the working tree, e.g. origin/rebuild-11, the branch the
-// PC commits the records to (fetch first). Pictures come from the working tree's studio/public/assets, which git does
-// not hold: a picture not yet in assets/facts/ is made there with macOS `sips`, or the page is built without it and
-// the script says so. A route's globe is drawn the same once, from the land shapes the studio installs
-// (studio/node_modules/world-atlas). --check builds everything in memory, writes nothing, and exits 1 if any file
-// would change.
+// PC commits the records to (fetch first). Pictures come from the working tree's studio/public/assets, whose images git
+// does not hold: a picture not yet in assets/facts/ is made there with ffmpeg, or the page is built without it and the
+// script says so. A route's globe is drawn the same once, from world-atlas's 1:50m land shapes, which travel with this
+// script (scripts/data/land-50m.json, ISC; Natural Earth's data is public domain). --check builds everything in memory,
+// writes nothing, and exits 1 if any file would change.
 //
-// Node 18 or later, no dependencies.
+// The PC runs this each night after it commits the day's records, and pushes what changed (factful D-067).
+//
+// Node 18 or later and ffmpeg with ffprobe; no npm dependencies.
 
 import fs from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
-import { execFileSync, spawnSync } from 'node:child_process';
+import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const SITE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -431,21 +432,36 @@ function buildRun(run, rows, read, entry) {
 // Pictures: web copies in assets/facts/, each with a small record of where it came from. They are made once, on the
 // machine that holds the studio's assets, and never remade.
 
-const sipsAvailable = (() => {
+// ffmpeg rather than macOS `sips`, which made the pictures up to 2026-11-11: the PC builds these pages each night and
+// has no sips. Both machines have ffmpeg. A picture already made is never made again, so the switch changed none.
+const ffmpegAvailable = (() => {
   let known;
-  return () => (known ??= spawnSync('sips', ['--version'], { encoding: 'utf8' }).status === 0);
+  return () => (known ??= ['ffmpeg', 'ffprobe'].every((t) => spawnSync(t, ['-version'], { encoding: 'utf8' }).status === 0));
 })();
 
-function sipsInfo(file) {
-  const out = execFileSync('sips', ['-g', 'pixelWidth', '-g', 'pixelHeight', '-g', 'hasAlpha', file], { encoding: 'utf8' });
-  const num = (k) => Number(new RegExp(`${k}: (\\d+)`).exec(out)?.[1]);
-  return { width: num('pixelWidth'), height: num('pixelHeight'), alpha: /hasAlpha: yes/.test(out) };
+// Pixel formats that can carry transparency, as ffprobe names them (pal8: a palette PNG may hold transparent entries).
+const ALPHA_FORMATS = /^(rgba|bgra|argb|abgr|ya8|ya16|rgba64|bgra64|yuva|gbrap|pal8)/;
+
+// ffprobe reads 0×0 for an image it cannot decode: one over about 268 megapixels, like the 30000×29560 Holbein plate
+// (its pictures were made with sips before the switch), or a file that is not an image.
+function imageInfo(file) {
+  const r = spawnSync('ffprobe', ['-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=width,height,pix_fmt',
+    '-of', 'json', file], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+  let st = {};
+  try { st = JSON.parse(r.stdout || '{}').streams?.[0] ?? {}; } catch { st = {}; }
+  return { width: Number(st.width) || 0, height: Number(st.height) || 0, alpha: ALPHA_FORMATS.test(st.pix_fmt ?? '') };
 }
 
-function sips(args) {
-  const r = spawnSync('sips', args.map(String), { encoding: 'utf8' });
-  if (r.status !== 0) throw new Error(`sips ${args.join(' ')} failed: ${r.stderr || r.stdout}`);
+function ffmpeg(args) {
+  // -nostdin: run from a script piped over ssh, ffmpeg would otherwise read the rest of that script as input.
+  const r = spawnSync('ffmpeg', ['-nostdin', '-v', 'error', '-y', ...args.map(String)], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+  if (r.status !== 0) throw new Error(`ffmpeg ${args.join(' ')} failed: ${r.stderr || r.stdout}`);
 }
+
+// JPEG quality for ffmpeg's encoder (-q:v, 2 best to 31 worst). At 3, on five of the pictures sips made at 76
+// (2026-11-12), ffmpeg kept their sizes in pixels exactly, looked the same side by side at full size, and wrote files
+// 11–56% smaller. The sources are sRGB, and ffmpeg writes no colour profile, which browsers read as sRGB.
+const JPEG_Q = 3;
 
 const PICTURE_LICENCES = /^(public domain|cc0|cc by \d(\.\d)?)$/i;
 
@@ -462,33 +478,32 @@ function picture(name, { asset, rect = null, max = 1200 }, ctx) {
   if (!PICTURE_LICENCES.test(rec.licence ?? '')) { ctx.notes.push(`picture ${name}: its licence "${rec.licence}" is not one these pages reuse`); return null; }
   const src = path.join(ctx.repo, 'studio/public/assets', rec.file);
   if (!fs.existsSync(src)) { ctx.notes.push(`picture ${name}: ${rec.file} is not on this machine`); return null; }
-  if (!sipsAvailable()) { ctx.notes.push(`picture ${name}: making it needs macOS sips; build on the Mac to add it`); return null; }
+  if (!ffmpegAvailable()) { ctx.notes.push(`picture ${name}: making it needs ffmpeg and ffprobe on this machine`); return null; }
 
-  const info = sipsInfo(src);
+  const info = imageInfo(src);
+  if (!info.width || !info.height) {
+    ctx.notes.push(`picture ${name}: ffmpeg cannot read ${rec.file} (over its size limit of about 268 megapixels, or not an image)`);
+    return null;
+  }
   const ext = /\.png$/i.test(rec.file) && info.alpha ? '.png' : '.jpg';
-  const format = (q) => (ext === '.png' ? ['-s', 'format', 'png'] : ['-s', 'format', 'jpeg', '-s', 'formatOptions', q]);
   const out = `${base}${ext}`;
   fs.mkdirSync(path.dirname(out), { recursive: true });
-  let from = src;
-  let tmp = null;
-  try {
-    if (rect) {
-      // sips resamples before it crops when given both, so the crop is its own pass, at full resolution. It also
-      // takes an offset of 0 as none and crops the middle instead, so an offset is never less than one pixel.
-      const x = Math.max(1, Math.round(rect.x * info.width));
-      const y = Math.max(1, Math.round(rect.y * info.height));
-      const w = Math.min(info.width - x, Math.round(rect.w * info.width));
-      const h = Math.min(info.height - y, Math.round(rect.h * info.height));
-      tmp = path.join(os.tmpdir(), `build-facts-${process.pid}-${name}${ext}`);
-      sips(['--cropToHeightWidth', h, w, '--cropOffset', y, x, ...format(95), src, '--out', tmp]);
-      from = tmp;
-    }
-    const cur = rect ? sipsInfo(from) : info;
-    sips([...(Math.max(cur.width, cur.height) > max ? ['-Z', max] : []), ...format(76), from, '--out', out]);
-  } finally {
-    if (tmp) fs.rmSync(tmp, { force: true });
+  // One pass: the crop at full resolution, then the longer side down to `max` (Lanczos). An offset is never less
+  // than one pixel, as it was with sips, so a crop made on either tool covers the same pixels.
+  const filters = [];
+  let w = info.width;
+  let h = info.height;
+  if (rect) {
+    const x = Math.max(1, Math.round(rect.x * info.width));
+    const y = Math.max(1, Math.round(rect.y * info.height));
+    w = Math.min(info.width - x, Math.round(rect.w * info.width));
+    h = Math.min(info.height - y, Math.round(rect.h * info.height));
+    filters.push(`crop=${w}:${h}:${x}:${y}`);
   }
-  const made = sipsInfo(out);
+  if (Math.max(w, h) > max) filters.push(`${w >= h ? `scale=${max}:-2` : `scale=-2:${max}`}:flags=lanczos`);
+  ffmpeg(['-i', src, ...(filters.length ? ['-vf', filters.join(',')] : []), '-frames:v', '1', '-update', '1',
+    ...(ext === '.png' ? [] : ['-q:v', JPEG_Q]), out]);
+  const made = imageInfo(out);
   const meta = {
     file: path.basename(out), width: made.width, height: made.height, asset, rect,
     original: rec.title ?? null, page: rec.page ?? null, source: rec.source ?? null,
@@ -594,8 +609,8 @@ function routeMap(run, fig, ctx) {
   const out = path.join(SITE, PICTURES, file);
   if (fs.existsSync(out)) return meta;
   if (ctx.check) { ctx.notes.push(`map ${file} is not in ${PICTURES}/`); return null; }
-  const landFile = path.join(ctx.repo, 'studio/node_modules/world-atlas/land-50m.json');
-  if (!fs.existsSync(landFile)) { ctx.notes.push(`map ${file}: drawing it needs the studio's world-atlas (npm ci in studio/)`); return null; }
+  const landFile = path.join(SITE, 'scripts/data/land-50m.json');
+  if (!fs.existsSync(landFile)) { ctx.notes.push(`map ${file}: scripts/data/land-50m.json is missing`); return null; }
   const svg = globeSvg(fig.points, parse(fs.readFileSync(landFile, 'utf8'), 'world-atlas/land-50m.json'));
   if (!svg) { ctx.notes.push(`map ${file}: the route runs past the horizon of one view of the globe`); return null; }
   fs.mkdirSync(path.dirname(out), { recursive: true });

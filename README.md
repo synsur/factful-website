@@ -40,5 +40,17 @@ stops it. To build by hand:
   first build after it arrives. ffmpeg cannot read a source over about 268 megapixels; make that one on the Mac.
 - A route's globe is drawn once from world-atlas's 1:50m land shapes in `scripts/data/` (ISC; the data is Natural
   Earth's, public domain).
-- Every App Store link uses `APP_STORE_PROVIDER_TOKEN` at the top of the script. While it is empty they are the plain
-  store URL; with the provider token (`pt=`) from App Store Connect they become the campaign link `ct=web-fact`.
+- Every App Store link uses `APP_STORE_PROVIDER_TOKEN` at the top of the script: Factful's provider token (`pt=`),
+  set 2026-11-13, makes them the campaign link `ct=web-fact`. Empty, they would be the plain store URL. The structured
+  data keeps the plain URL.
+
+## Campaign links
+
+App Store Connect's Campaigns page counts downloads by the `ct` on the link that was tapped (only from people who share
+analytics with developers). The hand-written pages carry their own: `web-home` on the home page, `web-checked` on
+`how-facts-are-checked.html`, `web` on support, privacy and terms; the fact pages carry `web-fact`. `assets/ref.js`,
+on every page, prefixes them with `chatgpt-` on a visit that came from ChatGPT (its `utm_source=chatgpt.com`, or a
+chatgpt.com referrer), and remembers that for the tab in `sessionStorage`. It sends nothing; the privacy policy's "This
+website" says so. Apple shows a campaign no sooner than 24 hours after launch and only after 5 first-time downloads,
+and credits a download within 24 hours of the tap. The Smart App Banner carries no campaign: its `affiliate-data`
+form rests on Apple's developer forums, not its documentation.

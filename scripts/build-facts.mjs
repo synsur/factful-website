@@ -32,14 +32,16 @@ const SITE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ORIGIN = 'https://factful.app';
 const TZ = 'America/Toronto'; // the studio's day (factful's kontrol.yaml): a post's date is its date there
 
-// The App Store link on every page. Fill in Factful's provider token (App Store Connect › App Analytics › Campaign
-// links: the number after pt=) and these pages link with the campaign ct=web-fact; while it is empty they use the plain
-// store URL. Run the script again after changing it.
-const APP_STORE_PROVIDER_TOKEN = '';
+// The App Store link on every page. With Factful's provider token (App Store Connect › App Analytics › Campaigns ›
+// Generate a Campaign Link: the number after pt=, read 2026-11-13) these pages link with the campaign ct=web-fact, and
+// /assets/ref.js makes it chatgpt-web-fact on a visit that came from ChatGPT; while it is empty they use the plain
+// store URL. Run the script again after changing it. The structured data keeps the plain URL: it names the app.
+const APP_STORE_PROVIDER_TOKEN = '127319049';
 const APP_ID = '6746733914';
+const APP_STORE_PLAIN = `https://apps.apple.com/us/app/factful-daily-facts/id${APP_ID}`;
 const APP_STORE = APP_STORE_PROVIDER_TOKEN
   ? `https://apps.apple.com/app/apple-store/id${APP_ID}?pt=${encodeURIComponent(APP_STORE_PROVIDER_TOKEN)}&ct=web-fact&mt=8`
-  : `https://apps.apple.com/us/app/factful-daily-facts/id${APP_ID}`;
+  : APP_STORE_PLAIN;
 const APP_NAME = 'Factful - Daily Facts'; // the App Store name: "Factful" alone collides with Rosling's Factfulness
 const HELP = 'help@factful.app';
 const ACCOUNTS = { tiktok: 'https://www.tiktok.com/@factful.app', instagram: 'https://www.instagram.com/app.factful/' };
@@ -700,7 +702,7 @@ function bar(current) {
 const FOOTER = `<footer>
   <div class="wrap">
     <span>Factful, by Vickio Labs Inc.</span>
-    <nav aria-label="Footer"><a href="/facts/">Facts</a><a href="/support.html">Support</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></nav>
+    <nav aria-label="Footer"><a href="/facts/">Facts</a><a href="/how-facts-are-checked.html">How facts are checked</a><a href="/support.html">Support</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></nav>
   </div>
 </footer>`;
 
@@ -726,6 +728,7 @@ ${bar(current)}
 ${main}
 
 ${FOOTER}
+<script src="/assets/ref.js" defer></script>
 </body>
 </html>
 `;
@@ -740,7 +743,7 @@ const APP = {
   '@type': 'SoftwareApplication', '@id': `${ORIGIN}/#app`, name: APP_NAME, alternateName: 'Factful',
   operatingSystem: 'iOS', applicationCategory: 'EducationApplication',
   description: 'Surprising, sourced facts on your lock screen. Every fact checked against its source.',
-  url: `${ORIGIN}/`, installUrl: APP_STORE, sameAs: [`https://apps.apple.com/us/app/factful-daily-facts/id${APP_ID}`],
+  url: `${ORIGIN}/`, installUrl: APP_STORE_PLAIN, sameAs: [APP_STORE_PLAIN],
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
   publisher: { '@type': 'Organization', name: 'Vickio Labs Inc.' },
 };

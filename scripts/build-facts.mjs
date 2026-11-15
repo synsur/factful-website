@@ -5,7 +5,7 @@
 //
 // One page per piece already posted to TikTok and Instagram (studio/records/posts.jsonl), and never an unposted
 // library fact. Each page carries the claim as posted, its explanation, the source it was checked against and when,
-// the subject, and links to the posts. Every word of a fact comes from checked text: the library record
+// the subject, and links to the posts (YouTube's too, since factful D-073). Every word of a fact comes from checked text: the library record
 // (content/library) for a fact with an id, or for a lab post the treatment's own lines, which the truth gate passed
 // (studio/runs/<run>/truth.json). A run that fails any check is skipped and named, never published half-checked.
 //
@@ -44,8 +44,9 @@ const APP_STORE = APP_STORE_PROVIDER_TOKEN
   : APP_STORE_PLAIN;
 const APP_NAME = 'Factful - Daily Facts'; // the App Store name: "Factful" alone collides with Rosling's Factfulness
 const HELP = 'help@factful.app';
-const ACCOUNTS = { tiktok: 'https://www.tiktok.com/@factful.app', instagram: 'https://www.instagram.com/app.factful/' };
-const PLATFORMS = { tiktok: 'TikTok', instagram: 'Instagram' };
+const ACCOUNTS = { tiktok: 'https://www.tiktok.com/@factful.app', instagram: 'https://www.instagram.com/app.factful/',
+  youtube: 'https://www.youtube.com/@factful-app' };
+const PLATFORMS = { tiktok: 'TikTok', instagram: 'Instagram', youtube: 'YouTube' };
 
 // The app's seven subjects (content/GUIDE.md), with the glyphs site.js draws for them.
 const SUBJECTS = {
@@ -362,7 +363,7 @@ function buildRun(run, rows, read, entry) {
   for (const r of [...rows].sort((a, b) => Date.parse(a.posted_at) - Date.parse(b.posted_at))) {
     if (PLATFORMS[r.platform] && !links[r.platform] && /^https:\/\//.test(r.url ?? '')) links[r.platform] = r.url;
   }
-  if (!Object.keys(links).length) return { skip: 'no TikTok or Instagram post with a URL' };
+  if (!Object.keys(links).length) return { skip: 'no TikTok, Instagram or YouTube post with a URL' };
   const posted = rows.map((r) => r.posted_at).filter(Boolean).sort((a, b) => Date.parse(a) - Date.parse(b))[0];
   if (!posted) return { skip: 'no post time' };
 
@@ -737,7 +738,7 @@ ${FOOTER}
 const ORG = {
   '@type': 'Organization', '@id': `${ORIGIN}/#factful`, name: 'Factful', url: `${ORIGIN}/`,
   logo: { '@type': 'ImageObject', url: `${ORIGIN}/assets/img/icon-512.png`, width: 512, height: 512 },
-  sameAs: [ACCOUNTS.tiktok, ACCOUNTS.instagram],
+  sameAs: [ACCOUNTS.tiktok, ACCOUNTS.instagram, ACCOUNTS.youtube],
 };
 const APP = {
   '@type': 'SoftwareApplication', '@id': `${ORIGIN}/#app`, name: APP_NAME, alternateName: 'Factful',

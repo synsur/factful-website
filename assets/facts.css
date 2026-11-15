@@ -310,7 +310,7 @@ h2.caps { margin: 0 0 1.25rem; text-wrap: initial; }
 }
 .folio.is-today .foot { justify-content: space-between; }
 .folio.is-today .why-link { color: var(--ink); }
-.folio.is-today .posts { display: inline-flex; gap: 1rem; }
+.folio.is-today .posts { display: inline-flex; flex-wrap: wrap; gap: 0 1rem; }
 .today-edge {
   position: absolute; z-index: 1; left: .55rem; right: .55rem; bottom: -.62rem; height: .75rem;
   background: var(--leaf-edge); border-radius: 0 0 .45rem .45rem;

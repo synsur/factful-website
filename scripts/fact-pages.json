@@ -46,6 +46,10 @@
       "subject": "nature",
       "title": "A godwit flew from Alaska to Tasmania without landing once"
     },
+    "2026-11-10-v20-peigneur": {
+      "subject": "geography",
+      "slug": "in-1980-a-drill-pierced-a-salt-mine-under"
+    },
     "2026-11-10-v22-vulovic": {
       "subject": "history",
       "slug": "flight-attendant-vesna-vulovic-fell-about-10-160-metres"
@@ -53,6 +57,10 @@
     "2026-11-11-v21-rooms": {
       "subject": "science",
       "slug": "in-a-room-of-just-23-people-the-odds"
+    },
+    "2026-11-11-v24-1889": {
+      "subject": "technology",
+      "slug": "nintendo-was-founded-in-1889-to-make-handmade-playing"
     }
   }
 }
